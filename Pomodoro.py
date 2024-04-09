@@ -26,6 +26,9 @@ class PomodoroTimer:
         self.pause_button = tk.Button(self.master, text="Pause/Continue", command=self.pause_timer, font=("Calibri", self.current_font_size))
         self.pause_button.pack(side=tk.RIGHT, padx=20)
 
+        self.skip_button = tk.Button(self.master, text="Skip", command=self.skip_session, font=("Calibri", self.current_font_size))
+        self.skip_button.pack(side=tk.BOTTOM, pady=10)
+
         self.update_timer()
 
         self.master.bind("<MouseWheel>", self.zoom)
@@ -37,19 +40,22 @@ class PomodoroTimer:
         if not self.is_paused:
             self.time_left -= 1
             if self.time_left <= 0:
-                if self.current_session % 2 == 0:
-                    self.time_left = self.session_lengths[self.current_session][1] * 60
-                    self.status_label.config(text="Breaking")
-                else:
-                    self.current_session += 1
-                    if self.current_session >= len(self.session_lengths):
-                        messagebox.showinfo("Pomodoro Timer", "All sessions complete!")
-                        self.master.destroy()
-                        return
-                    self.time_left = self.session_lengths[self.current_session][0] * 60
-                    self.status_label.config(text="Studying")
+                self.end_session()
             self.timer_label.config(text=self.format_time(self.time_left))
         self.master.after(1000, self.update_timer)
+
+    def end_session(self):
+        if self.current_session % 2 == 0:
+            self.time_left = self.session_lengths[self.current_session][1] * 60
+            self.status_label.config(text="Breaking")
+        else:
+            self.current_session += 1
+            if self.current_session >= len(self.session_lengths):
+                messagebox.showinfo("Pomodoro Timer", "All sessions complete!")
+                self.master.destroy()
+                return
+            self.time_left = self.session_lengths[self.current_session][0] * 60
+            self.status_label.config(text="Studying")
 
     def start_timer(self):
         if self.current_session % 2 == 0:
@@ -61,17 +67,22 @@ class PomodoroTimer:
     def pause_timer(self):
         self.is_paused = not self.is_paused
 
+    def skip_session(self):
+        # End the current session immediately
+        self.end_session()
+
     def zoom(self, event):
         zoom_direction = event.delta
-        if zoom_direction > 0:
+        if zoom_direction > 0 and self.current_font_size < 40:
             self.current_font_size += 2
-        else:
+        elif zoom_direction < 0 and self.current_font_size > 10:
             self.current_font_size -= 2
 
         self.status_label.config(font=("Calibri", self.current_font_size))
         self.timer_label.config(font=("Calibri", self.current_font_size))
         self.start_button.config(font=("Calibri", self.current_font_size))
         self.pause_button.config(font=("Calibri", self.current_font_size))
+        self.skip_button.config(font=("Calibri", self.current_font_size))
 
 
 if __name__ == "__main__":
