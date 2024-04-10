@@ -10,12 +10,11 @@ class PomodoroTimer:
 
         self.current_font_size = 20
         self.is_paused = True
-        # Schedule: List of tuples with (work_duration_in_minutes, break_duration_in_minutes)
-        self.session_lengths = [(25, 5), (25, 5), (25, 5), (25, 15), (45, 15), (45, 15), (45, 25), (45, 25)]
-        self.current_session = 0  # Index to track the current session
-        self.time_left = self.session_lengths[self.current_session][0] * 60  # Start with the first work session
 
-        # UI Components
+        self.session_lengths = [(25, 5), (25, 5), (25, 5), (25, 15), (45, 15), (45, 15), (45, 25), (45, 25)]
+        self.current_session = 0 
+        self.time_left = self.session_lengths[self.current_session][0] * 60
+
         self.status_label = tk.Label(self.master, text="Press Start", font=("Calibri", self.current_font_size), bg="lightblue")
         self.status_label.pack(pady=20)
 
@@ -31,9 +30,8 @@ class PomodoroTimer:
         self.skip_button = tk.Button(self.master, text="Skip", command=self.skip_session, font=("Calibri", self.current_font_size))
         self.skip_button.pack(side=tk.BOTTOM, pady=10)
 
-        self.master.bind("<MouseWheel>", self.zoom)  # Bind mousewheel to zoom in/out
-
-        self.update_timer()  # Start the timer update loop
+        self.master.bind("<MouseWheel>", self.zoom)  
+        self.update_timer()  
 
     def format_time(self, seconds):
         """Converts seconds into HH:MM:SS format."""
@@ -46,20 +44,20 @@ class PomodoroTimer:
             if self.time_left <= 0:
                 self.end_session()
             self.timer_label.config(text=self.format_time(self.time_left))
-        self.master.after(1000, self.update_timer)  # Schedule next update
+        self.master.after(1000, self.update_timer) 
 
     def end_session(self):
         """Handles the transition between work and break sessions."""
-        if self.current_session % 2 == 0:  # Work session just ended
-            self.time_left = self.session_lengths[self.current_session][1] * 60  # Set time for break
+        if self.current_session % 2 == 0:  
+            self.time_left = self.session_lengths[self.current_session][1] * 60 ak
             self.status_label.config(text="Breaking")
-        else:  # Break session just ended
+        else: 
             self.current_session += 1
-            if self.current_session >= len(self.session_lengths):  # Check if all sessions are complete
+            if self.current_session >= len(self.session_lengths): 
                 messagebox.showinfo("Pomodoro Timer", "All sessions complete!")
                 self.master.destroy()
                 return
-            self.time_left = self.session_lengths[self.current_session][0] * 60  # Set time for next work session
+            self.time_left = self.session_lengths[self.current_session][0] * 60  
             self.status_label.config(text="Studying")
 
     def start_timer(self):
@@ -78,10 +76,10 @@ class PomodoroTimer:
             messagebox.showinfo("Pomodoro Timer", "All sessions complete!")
             self.master.destroy()
             return
-        if self.current_session % 2 == 0:  # Next session is a work session
+        if self.current_session % 2 == 0:  
             self.time_left = self.session_lengths[self.current_session][0] * 60
             self.status_label.config(text="Studying")
-        else:  # Next session is a break
+        else:  
             self.time_left = self.session_lengths[self.current_session][1] * 60
             self.status_label.config(text="Breaking")
 
@@ -93,7 +91,7 @@ class PomodoroTimer:
         elif zoom_direction < 0 and self.current_font_size > 10:
             self.current_font_size -= 2
 
-        # Update font size for all UI components
+
         self.status_label.config(font=("Calibri", self.current_font_size))
         self.timer_label.config(font=("Calibri", self.current_font_size))
         self.start_button.config(font=("Calibri", self.current_font_size))
